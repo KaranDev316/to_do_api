@@ -3,6 +3,8 @@ const todos = [
   { id: 2, title: 'Build API', completed: false }
 ];
 
+let nextTodoId = Math.max(...todos.map((todo) => todo.id), 0) + 1;
+
 function findTodoById(id) {
   return todos.find((item) => item.id === id);
 }
@@ -29,7 +31,13 @@ function getTodoById(req, res) {
 }
 
 function createTodo(req, res) {
-  res.status(201).json({ message: 'Todo created' });
+  const { title, completed } = req.body;
+  const todo = { id: nextTodoId, title, completed };
+
+  nextTodoId += 1;
+  todos.push(todo);
+
+  res.status(201).json(todo);
 }
 
 module.exports = { findTodoById, getAllTodos, getTodoById, createTodo };
