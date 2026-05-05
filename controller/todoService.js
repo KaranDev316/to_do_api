@@ -32,6 +32,11 @@ function getTodoById(req, res) {
 
 function createTodo(req, res) {
   const { title, completed } = req.body;
+
+  if (!title) {
+    return res.status(400).json({ message: 'Title is required' });
+  }
+
   const todo = { id: nextTodoId, title, completed };
 
   nextTodoId += 1;
