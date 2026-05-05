@@ -1,17 +1,4 @@
-const todos = [
-  { id: 1, title: 'Learn Express', completed: false },
-  { id: 2, title: 'Build API', completed: false }
-];
-
-let nextTodoId = Math.max(...todos.map((todo) => todo.id), 0) + 1;
-
-function findTodoById(id) {
-  return todos.find((item) => item.id === id);
-}
-
-function getAllTodos() {
-  return todos;
-}
+const { findTodoById, getAllTodos, createTodoService } = require('../service/todoService');
 
 function getTodoById(req, res) {
   const { id } = req.params;
@@ -37,10 +24,7 @@ function createTodo(req, res) {
     return res.status(400).json({ message: 'Title is required' });
   }
 
-  const todo = { id: nextTodoId, title, completed };
-
-  nextTodoId += 1;
-  todos.push(todo);
+  const todo = createTodoService({ title, completed });
 
   res.status(201).json(todo);
 }
