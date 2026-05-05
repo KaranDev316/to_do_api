@@ -26,6 +26,10 @@ function getTodoById(req, res) {
   res.status(200).json(todo);
 }
 
+function createTodo(req, res) {
+  res.status(201).json({ message: 'Todo created' });
+}
+
 app.get('/todos', (req, res) => {
   console.log('GET /todos route hit');
   const todoList = getAllTodos();
@@ -34,6 +38,8 @@ app.get('/todos', (req, res) => {
 });
 
 app.get('/todos/:id', getTodoById);
+
+app.post('/todos', createTodo);
 
 const PORT = 3000;
 
