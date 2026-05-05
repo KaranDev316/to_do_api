@@ -13,6 +13,10 @@ app.get('/', (req, res) => {
   res.send('API is running');
 });
 
+app.get('/todos', (req, res) => {
+  res.status(200).json(todos);
+});
+
 const PORT = 3000;
 
 app.listen(PORT, () => {
