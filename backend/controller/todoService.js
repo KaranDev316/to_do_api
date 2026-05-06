@@ -4,7 +4,7 @@ const {
   createTodoService,
   toggleTodoCompleteService,
   deleteTodoService
-} = require('../todoService');
+} = require('../service/todoService');
 
 function getTodoById(req, res) {
   const { id } = req.params;
