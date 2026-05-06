@@ -35,4 +35,22 @@ function toggleTodoCompleteService(id) {
   return todo;
 }
 
-module.exports = { findTodoById, getAllTodos, createTodoService, toggleTodoCompleteService };
+function deleteTodoService(id) {
+  const todoIndex = todos.findIndex((todo) => todo.id === id);
+
+  if (todoIndex === -1) {
+    return null;
+  }
+
+  const [deletedTodo] = todos.splice(todoIndex, 1);
+
+  return deletedTodo;
+}
+
+module.exports = {
+  findTodoById,
+  getAllTodos,
+  createTodoService,
+  toggleTodoCompleteService,
+  deleteTodoService
+};
