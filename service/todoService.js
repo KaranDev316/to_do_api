@@ -14,7 +14,7 @@ function getAllTodos() {
 }
 
 function createTodoService(data) {
-  const { title, completed } = data;
+  const { title, completed = false } = data;
   const todo = { id: nextTodoId, title, completed };
 
   nextTodoId += 1;
@@ -23,4 +23,16 @@ function createTodoService(data) {
   return todo;
 }
 
-module.exports = { findTodoById, getAllTodos, createTodoService };
+function toggleTodoCompleteService(id) {
+  const todo = findTodoById(id);
+
+  if (!todo) {
+    return null;
+  }
+
+  todo.completed = !todo.completed;
+
+  return todo;
+}
+
+module.exports = { findTodoById, getAllTodos, createTodoService, toggleTodoCompleteService };

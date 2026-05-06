@@ -1,5 +1,5 @@
 const express = require('express');
-const { getAllTodos, getTodoById, createTodo } = require('./controller/todoService');
+const { getAllTodos, getTodoById, createTodo, completeTodo } = require('./controller/todoService');
 
 const app = express();
 
@@ -18,6 +18,7 @@ app.get('/todos', (req, res) => {
 
 app.get('/todos/:id', getTodoById);
 app.post('/todos', createTodo);
+app.patch('/todos/:id/complete', completeTodo);
 
 const PORT = 3000;
 

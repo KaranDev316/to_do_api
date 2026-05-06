@@ -1,4 +1,9 @@
-const { findTodoById, getAllTodos, createTodoService } = require('../service/todoService');
+const {
+  findTodoById,
+  getAllTodos,
+  createTodoService,
+  toggleTodoCompleteService
+} = require('../service/todoService');
 
 function getTodoById(req, res) {
   const { id } = req.params;
@@ -29,4 +34,21 @@ function createTodo(req, res) {
   res.status(201).json(todo);
 }
 
-module.exports = { findTodoById, getAllTodos, getTodoById, createTodo };
+function completeTodo(req, res) {
+  const { id } = req.params;
+  const todoId = Number(id);
+
+  if (Number.isNaN(todoId)) {
+    return res.status(400).json({ message: 'Invalid ID' });
+  }
+
+  const todo = toggleTodoCompleteService(todoId);
+
+  if (!todo) {
+    return res.status(404).json({ message: 'Todo not found' });
+  }
+
+  res.status(200).json(todo);
+}
+
+module.exports = { findTodoById, getAllTodos, getTodoById, createTodo, completeTodo };
