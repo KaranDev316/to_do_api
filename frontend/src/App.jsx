@@ -6,19 +6,27 @@ import TodoList from './components/TodoList'
 function App() {
   const [todos, setTodos] = useState([])
   const [isLoading, setIsLoading] = useState(true)
+  const [error, setError] = useState('')
 
   useEffect(() => {
     async function fetchTodos() {
       setIsLoading(true)
+      setError('')
 
       try {
         const response = await fetch('/todos')
+
+        if (!response.ok) {
+          throw new Error('Failed to load todos')
+        }
+
         const data = await response.json()
 
         console.log('Fetched todos:', data)
-        setTodos(data)
+        setTodos(data.data)
       } catch (error) {
         console.error('Failed to fetch todos:', error)
+        setError('Failed to load todos')
       } finally {
         setIsLoading(false)
       }
@@ -47,7 +55,13 @@ function App() {
             </p>
           )}
 
-          {!isLoading && todos.length === 0 && (
+          {!isLoading && error && (
+            <p className="text-center text-sm font-medium text-red-600">
+              {error}
+            </p>
+          )}
+
+          {!isLoading && !error && todos.length === 0 && (
             <p className="text-center text-sm font-medium text-slate-500">
               No todos found
             </p>

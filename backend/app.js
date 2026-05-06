@@ -19,7 +19,10 @@ app.get('/todos', (req, res) => {
   console.log('GET /todos route hit');
   const todoList = getAllTodos();
   console.log(`Returning ${todoList.length} todos`);
-  res.status(200).json(todoList);
+  res.status(200).json({
+    success: true,
+    data: todoList
+  });
 }); 
 
 app.get('/todos/:id', getTodoById);
