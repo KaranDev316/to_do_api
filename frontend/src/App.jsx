@@ -1,12 +1,16 @@
 
 import { useEffect, useState } from 'react'
 import './App.css'
+import TodoList from './components/TodoList'
 
 function App() {
   const [todos, setTodos] = useState([])
+  const [isLoading, setIsLoading] = useState(true)
 
   useEffect(() => {
     async function fetchTodos() {
+      setIsLoading(true)
+
       try {
         const response = await fetch('/todos')
         const data = await response.json()
@@ -15,6 +19,8 @@ function App() {
         setTodos(data)
       } catch (error) {
         console.error('Failed to fetch todos:', error)
+      } finally {
+        setIsLoading(false)
       }
     }
 
@@ -34,7 +40,21 @@ function App() {
           My Todos
         </h1>
 
-        <div className="mt-8 min-h-64 rounded-lg border border-dashed border-slate-300 bg-white" />
+        <div className="mt-8 min-h-64 rounded-lg border border-dashed border-slate-300 bg-slate-100 p-4">
+          {isLoading && (
+            <p className="text-center text-sm font-medium text-slate-500">
+              Loading...
+            </p>
+          )}
+
+          {!isLoading && todos.length === 0 && (
+            <p className="text-center text-sm font-medium text-slate-500">
+              No todos found
+            </p>
+          )}
+
+          {!isLoading && todos.length > 0 && <TodoList todos={todos} />}
+        </div>
       </section>
     </main>
   )
