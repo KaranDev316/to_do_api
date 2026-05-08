@@ -1,7 +1,8 @@
-import { act, render, screen } from '@testing-library/react'
+import { act, cleanup, fireEvent, render, screen } from '@testing-library/react'
 import { MemoryRouter } from 'react-router-dom'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import App from './App'
+import AddTodo from './components/AddTodo'
 
 function renderTodoDetailRoute() {
   return render(
@@ -77,5 +78,93 @@ describe('TodoDetail', () => {
     expect(
       screen.getByText("This todo doesn't exist or was deleted"),
     ).toBeInTheDocument()
+  })
+})
+
+describe('AddTodo', () => {
+  beforeEach(() => {
+    globalThis.fetch = vi.fn()
+  })
+
+  afterEach(() => {
+    cleanup()
+    vi.restoreAllMocks()
+  })
+
+  it('prevents duplicate rapid submits while creating a todo', () => {
+    const onTodoCreated = vi.fn()
+    globalThis.fetch.mockReturnValue(new Promise(() => {}))
+
+    render(<AddTodo onTodoCreated={onTodoCreated} />)
+
+    const input = screen.getByLabelText('Todo title')
+    const button = screen.getByRole('button', { name: 'Add Todo' })
+    const form = input.closest('form')
+
+    fireEvent.change(input, { target: { value: 'Buy milk' } })
+    fireEvent.submit(form)
+    fireEvent.submit(form)
+    fireEvent.submit(form)
+
+    expect(globalThis.fetch).toHaveBeenCalledTimes(1)
+    expect(globalThis.fetch).toHaveBeenCalledWith('/todos', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        title: 'Buy milk',
+      }),
+    })
+    expect(button).toBeDisabled()
+    expect(input).toBeDisabled()
+    expect(screen.getByRole('button', { name: 'Adding...' })).toBeInTheDocument()
+    expect(onTodoCreated).not.toHaveBeenCalled()
+  })
+
+  it('creates a todo successfully and resets the form', async () => {
+    const onTodoCreated = vi.fn()
+    const createdTodo = {
+      id: 3,
+      title: 'Buy milk',
+      completed: false,
+    }
+
+    globalThis.fetch.mockResolvedValue({
+      ok: true,
+      status: 201,
+      json: async () => ({
+        success: true,
+        data: createdTodo,
+      }),
+    })
+
+    render(<AddTodo onTodoCreated={onTodoCreated} />)
+
+    const input = screen.getByLabelText('Todo title')
+    const form = input.closest('form')
+
+    await act(async () => {
+      fireEvent.change(input, { target: { value: '  Buy milk  ' } })
+    })
+
+    await act(async () => {
+      fireEvent.submit(form)
+    })
+
+    expect(globalThis.fetch).toHaveBeenCalledTimes(1)
+    expect(globalThis.fetch).toHaveBeenCalledWith('/todos', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        title: 'Buy milk',
+      }),
+    })
+    expect(onTodoCreated).toHaveBeenCalledTimes(1)
+    expect(onTodoCreated).toHaveBeenCalledWith(createdTodo)
+    expect(input).toHaveValue('')
+    expect(screen.getByRole('button', { name: 'Add Todo' })).toBeDisabled()
   })
 })

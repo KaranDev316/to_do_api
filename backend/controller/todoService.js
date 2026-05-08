@@ -31,14 +31,28 @@ function getTodoById(req, res) {
 
 function createTodo(req, res) {
   const { title, completed } = req.body;
+  const trimmedTitle = typeof title === 'string' ? title.trim() : '';
 
-  if (!title) {
-    return res.status(400).json({ message: 'Title is required' });
+  if (!trimmedTitle) {
+    return res.status(400).json({
+      success: false,
+      message: 'Title is required'
+    });
   }
 
-  const todo = createTodoService({ title, completed });
+  if (trimmedTitle.length > 120) {
+    return res.status(400).json({
+      success: false,
+      message: 'Todo title must be 120 characters or fewer'
+    });
+  }
 
-  res.status(201).json(todo);
+  const todo = createTodoService({ title: trimmedTitle, completed });
+
+  res.status(201).json({
+    success: true,
+    data: todo
+  });
 }
 
 function completeTodo(req, res) {
