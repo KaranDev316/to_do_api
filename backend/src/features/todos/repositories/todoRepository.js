@@ -5,17 +5,20 @@ const todos = [
 
 let nextTodoId = Math.max(...todos.map((todo) => todo.id), 0) + 1;
 
-function findTodoById(id) {
-  return todos.find((item) => item.id === id);
-}
-
-function getAllTodos() {
+async function findAll() {
   return todos;
 }
 
-function createTodoService(data) {
-  const { title, completed = false } = data;
-  const todo = { id: nextTodoId, title, completed };
+async function findById(id) {
+  return todos.find((todo) => todo.id === id) || null;
+}
+
+async function create(data) {
+  const todo = {
+    id: nextTodoId,
+    title: data.title,
+    completed: data.completed ?? false
+  };
 
   nextTodoId += 1;
   todos.push(todo);
@@ -23,19 +26,18 @@ function createTodoService(data) {
   return todo;
 }
 
-function toggleTodoCompleteService(id) {
-  const todo = findTodoById(id);
+async function update(id, data) {
+  const todo = await findById(id);
 
   if (!todo) {
     return null;
   }
 
-  todo.completed = !todo.completed;
-
+  Object.assign(todo, data);
   return todo;
 }
 
-function deleteTodoService(id) {
+async function remove(id) {
   const todoIndex = todos.findIndex((todo) => todo.id === id);
 
   if (todoIndex === -1) {
@@ -43,14 +45,13 @@ function deleteTodoService(id) {
   }
 
   const [deletedTodo] = todos.splice(todoIndex, 1);
-
   return deletedTodo;
 }
 
 module.exports = {
-  findTodoById,
-  getAllTodos,
-  createTodoService,
-  toggleTodoCompleteService,
-  deleteTodoService
+  findAll,
+  findById,
+  create,
+  update,
+  remove
 };

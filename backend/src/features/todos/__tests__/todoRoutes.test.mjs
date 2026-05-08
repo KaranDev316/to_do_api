@@ -1,6 +1,6 @@
 import request from 'supertest';
 import { describe, expect, it } from 'vitest';
-import app from './app.js';
+import app from '../../../app.js';
 
 describe('GET /todos/:id', () => {
   it('returns a todo for an existing ID', async () => {
