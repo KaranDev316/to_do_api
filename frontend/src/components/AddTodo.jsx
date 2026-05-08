@@ -1,10 +1,11 @@
-import { useState } from 'react'
+import { useRef, useState } from 'react'
 
 function AddTodo({ onTodoCreated }) {
   const [title, setTitle] = useState('')
   const [isTouched, setIsTouched] = useState(false)
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [apiError, setApiError] = useState('')
+  const isSubmittingRef = useRef(false)
 
   const trimmedTitle = title.trim()
   const isEmpty = trimmedTitle.length === 0
@@ -12,6 +13,11 @@ function AddTodo({ onTodoCreated }) {
 
   async function handleSubmit(event) {
     event.preventDefault()
+
+    if (isSubmittingRef.current) {
+      return
+    }
+
     setIsTouched(true)
     setApiError('')
 
@@ -19,6 +25,7 @@ function AddTodo({ onTodoCreated }) {
       return
     }
 
+    isSubmittingRef.current = true
     setIsSubmitting(true)
 
     try {
@@ -46,6 +53,7 @@ function AddTodo({ onTodoCreated }) {
       console.error('Failed to create todo:', error)
       setApiError('Could not add todo. Please try again.')
     } finally {
+      isSubmittingRef.current = false
       setIsSubmitting(false)
     }
   }

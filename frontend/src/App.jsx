@@ -44,7 +44,7 @@ function TodoListPage() {
   }, [])
 
   function handleTodoCreated(todo) {
-    setTodos((currentTodos) => [todo, ...currentTodos])
+    setTodos((currentTodos) => [...currentTodos, todo])
   }
 
   return (
@@ -64,13 +64,7 @@ function TodoListPage() {
           </p>
         )}
 
-        {!isLoading && !error && todos.length === 0 && (
-          <p className="text-center text-sm font-medium text-slate-500">
-            No todos found
-          </p>
-        )}
-
-        {!isLoading && !error && todos.length > 0 && <TodoList todos={todos} />}
+        {!isLoading && !error && <TodoList todos={todos} />}
       </div>
     </div>
   )
