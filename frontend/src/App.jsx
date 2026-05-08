@@ -43,19 +43,13 @@ function TodoListPage() {
     fetchTodos()
   }, [])
 
-  function handleAddTodo(title) {
-    const todo = {
-      id: Date.now(),
-      title,
-      completed: false,
-    }
-
+  function handleTodoCreated(todo) {
     setTodos((currentTodos) => [todo, ...currentTodos])
   }
 
   return (
     <div className="space-y-4">
-      <AddTodo onAddTodo={handleAddTodo} />
+      <AddTodo onTodoCreated={handleTodoCreated} />
 
       <div className="min-h-64 rounded-lg border border-dashed border-slate-300 bg-slate-100 p-4">
         {isLoading && (
