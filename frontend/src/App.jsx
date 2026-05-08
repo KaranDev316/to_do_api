@@ -2,6 +2,7 @@
 import { useEffect, useState } from 'react'
 import { Link, Routes, Route, useParams } from 'react-router-dom'
 import './App.css'
+import AddTodo from './components/AddTodo'
 import TodoList from './components/TodoList'
 
 function wait(ms) {
@@ -42,27 +43,41 @@ function TodoListPage() {
     fetchTodos()
   }, [])
 
+  function handleAddTodo(title) {
+    const todo = {
+      id: Date.now(),
+      title,
+      completed: false,
+    }
+
+    setTodos((currentTodos) => [todo, ...currentTodos])
+  }
+
   return (
-    <div className="min-h-64 rounded-lg border border-dashed border-slate-300 bg-slate-100 p-4">
-      {isLoading && (
-        <p className="text-center text-sm font-medium text-slate-500">
-          Loading...
-        </p>
-      )}
+    <div className="space-y-4">
+      <AddTodo onAddTodo={handleAddTodo} />
 
-      {!isLoading && error && (
-        <p className="text-center text-sm font-medium text-red-600">
-          {error}
-        </p>
-      )}
+      <div className="min-h-64 rounded-lg border border-dashed border-slate-300 bg-slate-100 p-4">
+        {isLoading && (
+          <p className="text-center text-sm font-medium text-slate-500">
+            Loading...
+          </p>
+        )}
 
-      {!isLoading && !error && todos.length === 0 && (
-        <p className="text-center text-sm font-medium text-slate-500">
-          No todos found
-        </p>
-      )}
+        {!isLoading && error && (
+          <p className="text-center text-sm font-medium text-red-600">
+            {error}
+          </p>
+        )}
 
-      {!isLoading && !error && todos.length > 0 && <TodoList todos={todos} />}
+        {!isLoading && !error && todos.length === 0 && (
+          <p className="text-center text-sm font-medium text-slate-500">
+            No todos found
+          </p>
+        )}
+
+        {!isLoading && !error && todos.length > 0 && <TodoList todos={todos} />}
+      </div>
     </div>
   )
 }
