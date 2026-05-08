@@ -17,10 +17,16 @@ function getTodoById(req, res) {
   const todo = findTodoById(todoId);
 
   if (!todo) {
-    return res.status(404).json({ message: 'Todo not found' });
+    return res.status(404).json({
+      success: false,
+      message: 'Todo not found'
+    });
   }
 
-  res.status(200).json(todo);
+  res.status(200).json({
+    success: true,
+    data: todo
+  });
 }
 
 function createTodo(req, res) {
