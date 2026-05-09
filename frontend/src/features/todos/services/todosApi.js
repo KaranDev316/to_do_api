@@ -26,13 +26,13 @@ export async function getTodoById(id) {
   return result.data ?? result
 }
 
-export async function createTodo(title) {
+export async function createTodo(title, description = '') {
   const response = await apiFetch('/todos', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
     },
-    body: JSON.stringify({ title }),
+    body: JSON.stringify({ title, description }),
   })
 
   if (!response.ok) {

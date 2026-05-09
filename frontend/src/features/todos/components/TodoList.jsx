@@ -1,7 +1,7 @@
 import { Link } from 'react-router-dom'
 import TodoItem from './TodoItem'
 
-function TodoList({ todos, onDelete }) {
+function TodoList({ todos, onDelete, deletingIds }) {
   if (todos.length === 0) {
     return (
       <div className="rounded-md border border-dashed border-slate-300 bg-white px-4 py-8 text-center">
@@ -26,7 +26,11 @@ function TodoList({ todos, onDelete }) {
               }
             }}
           >
-            <TodoItem todo={todo} onDelete={onDelete} />
+            <TodoItem
+              todo={todo}
+              onDelete={onDelete}
+              isDeleting={deletingIds.includes(todo.id)}
+            />
           </Link>
         </li>
       ))}

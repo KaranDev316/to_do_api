@@ -1,12 +1,15 @@
 import { useRef, useState } from 'react'
 import { createTodo } from '../services/todosApi'
 import {
+  getTodoDescriptionValidation,
   getTodoTitleValidation,
+  MAX_DESCRIPTION_LENGTH,
   MAX_TITLE_LENGTH,
 } from '../utils/todoValidation'
 
 export function useCreateTodo(onTodoCreated) {
   const [title, setTitle] = useState('')
+  const [description, setDescription] = useState('')
   const [isTouched, setIsTouched] = useState(false)
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [apiError, setApiError] = useState('')
@@ -14,6 +17,11 @@ export function useCreateTodo(onTodoCreated) {
 
   const { trimmedTitle, isEmpty, isTooLong, validationError } =
     getTodoTitleValidation(title)
+  const {
+    trimmedDescription,
+    isTooLong: isDescriptionTooLong,
+    validationError: descriptionValidationError,
+  } = getTodoDescriptionValidation(description)
 
   async function handleSubmit(event) {
     event.preventDefault()
@@ -25,7 +33,7 @@ export function useCreateTodo(onTodoCreated) {
     setIsTouched(true)
     setApiError('')
 
-    if (isEmpty || isTooLong) {
+    if (isEmpty || isTooLong || isDescriptionTooLong) {
       return
     }
 
@@ -33,9 +41,10 @@ export function useCreateTodo(onTodoCreated) {
     setIsSubmitting(true)
 
     try {
-      const createdTodo = await createTodo(trimmedTitle)
+      const createdTodo = await createTodo(trimmedTitle, trimmedDescription)
       onTodoCreated(createdTodo)
       setTitle('')
+      setDescription('')
       setIsTouched(false)
     } catch (error) {
       console.error('Failed to create todo:', error)
@@ -51,15 +60,23 @@ export function useCreateTodo(onTodoCreated) {
     setApiError('')
   }
 
+  function handleDescriptionChange(event) {
+    setDescription(event.target.value)
+    setApiError('')
+  }
+
   return {
     title,
+    description,
     isSubmitting,
     apiError,
     maxTitleLength: MAX_TITLE_LENGTH,
-    isSubmitDisabled: isEmpty || isTooLong || isSubmitting,
-    showValidationError: isTouched && (isEmpty || isTooLong),
-    validationError,
+    maxDescriptionLength: MAX_DESCRIPTION_LENGTH,
+    isSubmitDisabled: isEmpty || isTooLong || isDescriptionTooLong || isSubmitting,
+    showValidationError: isTouched && (isEmpty || isTooLong || isDescriptionTooLong),
+    validationError: isDescriptionTooLong ? descriptionValidationError : validationError,
     handleChange,
+    handleDescriptionChange,
     handleSubmit,
     handleBlur: () => setIsTouched(true),
   }

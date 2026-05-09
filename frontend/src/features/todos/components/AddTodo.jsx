@@ -1,12 +1,15 @@
 function AddTodo({
   title,
+  description,
   isSubmitting,
   apiError,
   maxTitleLength,
+  maxDescriptionLength,
   isSubmitDisabled,
   showValidationError,
   validationError,
   onChange,
+  onDescriptionChange,
   onSubmit,
   onBlur,
 }) {
@@ -44,12 +47,32 @@ function AddTodo({
         </button>
       </div>
 
+      <label
+        htmlFor="todo-description"
+        className="mt-3 block text-sm font-medium text-slate-700"
+      >
+        Description
+      </label>
+
+      <textarea
+        id="todo-description"
+        value={description}
+        onChange={onDescriptionChange}
+        onBlur={onBlur}
+        disabled={isSubmitting}
+        maxLength={maxDescriptionLength + 1}
+        placeholder="Add details about this todo"
+        rows={3}
+        className="mt-2 w-full resize-y rounded-md border border-slate-300 px-3 py-2 text-sm outline-none focus:border-slate-500 focus:ring-2 focus:ring-slate-200 disabled:bg-slate-100"
+      />
+
       {showValidationError && (
         <p className="mt-2 text-sm text-red-600">{validationError}</p>
       )}
 
       <p className="mt-2 text-xs text-slate-400">
-        {title.length}/{maxTitleLength}
+        Title {title.length}/{maxTitleLength} - Description {description.length}
+        /{maxDescriptionLength}
       </p>
 
       {apiError && <p className="mt-2 text-sm text-red-600">{apiError}</p>}

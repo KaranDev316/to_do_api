@@ -12,7 +12,9 @@ describe('GET /todos/:id', () => {
       data: {
         id: 1,
         title: 'Learn Express',
-        completed: false
+        description: 'Practice routing, middleware, and controllers.',
+        completed: false,
+        createdAt: '2026-05-08T09:00:00.000Z'
       }
     });
   });
@@ -25,5 +27,27 @@ describe('GET /todos/:id', () => {
       success: false,
       message: 'Todo not found'
     });
+  });
+});
+
+describe('POST /todos', () => {
+  it('creates a todo with description and created date', async () => {
+    const response = await request(app).post('/todos').send({
+      title: 'Document todo fields',
+      description: 'Show description and created date in todo responses.'
+    });
+
+    expect(response.status).toBe(201);
+    expect(response.body).toMatchObject({
+      success: true,
+      data: {
+        title: 'Document todo fields',
+        description: 'Show description and created date in todo responses.',
+        completed: false
+      }
+    });
+    expect(response.body.data.id).toEqual(expect.any(Number));
+    expect(response.body.data.createdAt).toEqual(expect.any(String));
+    expect(new Date(response.body.data.createdAt).toString()).not.toBe('Invalid Date');
   });
 });

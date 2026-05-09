@@ -11,6 +11,7 @@ async function getTodoById(id) {
 async function createTodo(data) {
   return todoRepository.create({
     title: data.title,
+    description: data.description,
     completed: data.completed
   });
 }

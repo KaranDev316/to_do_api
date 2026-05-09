@@ -4,20 +4,23 @@ import { useCreateTodo } from '../hooks/useCreateTodo'
 import { useTodos } from '../hooks/useTodos'
 
 function TodoListPage() {
-  const { todos, isLoading, error, deleteError, addTodo, deleteTodo } = useTodos()
+  const { todos, isLoading, error, deleteError, deletingIds, addTodo, deleteTodo } = useTodos()
   const addTodoForm = useCreateTodo(addTodo)
 
   return (
     <div className="space-y-4">
       <AddTodo
         title={addTodoForm.title}
+        description={addTodoForm.description}
         isSubmitting={addTodoForm.isSubmitting}
         apiError={addTodoForm.apiError}
         maxTitleLength={addTodoForm.maxTitleLength}
+        maxDescriptionLength={addTodoForm.maxDescriptionLength}
         isSubmitDisabled={addTodoForm.isSubmitDisabled}
         showValidationError={addTodoForm.showValidationError}
         validationError={addTodoForm.validationError}
         onChange={addTodoForm.handleChange}
+        onDescriptionChange={addTodoForm.handleDescriptionChange}
         onSubmit={addTodoForm.handleSubmit}
         onBlur={addTodoForm.handleBlur}
       />
@@ -41,7 +44,9 @@ function TodoListPage() {
           </p>
         )}
 
-        {!isLoading && !error && <TodoList todos={todos} onDelete={deleteTodo} />}
+        {!isLoading && !error && (
+          <TodoList todos={todos} onDelete={deleteTodo} deletingIds={deletingIds} />
+        )}
       </div>
     </div>
   )

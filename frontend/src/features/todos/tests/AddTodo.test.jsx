@@ -9,13 +9,16 @@ function AddTodoHarness({ onTodoCreated }) {
   return (
     <AddTodo
       title={form.title}
+      description={form.description}
       isSubmitting={form.isSubmitting}
       apiError={form.apiError}
       maxTitleLength={form.maxTitleLength}
+      maxDescriptionLength={form.maxDescriptionLength}
       isSubmitDisabled={form.isSubmitDisabled}
       showValidationError={form.showValidationError}
       validationError={form.validationError}
       onChange={form.handleChange}
+      onDescriptionChange={form.handleDescriptionChange}
       onSubmit={form.handleSubmit}
       onBlur={form.handleBlur}
     />
@@ -55,6 +58,7 @@ describe('AddTodo', () => {
       },
       body: JSON.stringify({
         title: 'Buy milk',
+        description: '',
       }),
     })
     expect(button).toBeDisabled()
@@ -69,6 +73,8 @@ describe('AddTodo', () => {
       id: 3,
       title: 'Buy milk',
       completed: false,
+      description: 'Remember oat milk',
+      createdAt: '2026-05-09T10:00:00.000Z',
     }
 
     globalThis.fetch.mockResolvedValue({
@@ -83,10 +89,12 @@ describe('AddTodo', () => {
     render(<AddTodoHarness onTodoCreated={onTodoCreated} />)
 
     const input = screen.getByLabelText('Todo title')
+    const description = screen.getByLabelText('Description')
     const form = input.closest('form')
 
     await act(async () => {
       fireEvent.change(input, { target: { value: '  Buy milk  ' } })
+      fireEvent.change(description, { target: { value: '  Remember oat milk  ' } })
     })
 
     await act(async () => {
@@ -101,11 +109,13 @@ describe('AddTodo', () => {
       },
       body: JSON.stringify({
         title: 'Buy milk',
+        description: 'Remember oat milk',
       }),
     })
     expect(onTodoCreated).toHaveBeenCalledTimes(1)
     expect(onTodoCreated).toHaveBeenCalledWith(createdTodo)
     expect(input).toHaveValue('')
+    expect(description).toHaveValue('')
     expect(screen.getByRole('button', { name: 'Add Todo' })).toBeDisabled()
   })
 })
