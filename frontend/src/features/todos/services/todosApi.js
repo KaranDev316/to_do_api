@@ -49,3 +49,14 @@ export async function createTodo(title) {
 
   return createdTodo
 }
+
+export async function deleteTodo(id) {
+  const response = await apiFetch(`/todos/${id}`, {
+    method: 'DELETE',
+  })
+
+  if (!response.ok) {
+    const errorResult = await response.json().catch(() => null)
+    throw new Error(errorResult?.message || 'Failed to delete todo')
+  }
+}
