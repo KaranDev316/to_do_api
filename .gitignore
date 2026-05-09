@@ -8,4 +8,4 @@ logs/
 .env
 .idea/
 .vscode/
-    
+.continue
