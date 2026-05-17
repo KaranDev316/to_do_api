@@ -10,8 +10,11 @@ export function useTodos() {
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState('')
   const [deleteError, setDeleteError] = useState('')
+  const [updateError, setUpdateError] = useState('')
   const [deletingIds, setDeletingIds] = useState([])
+  const [updatingIds, setUpdatingIds] = useState([])
   const deletingIdsRef = useRef(new Set())
+  const updatingIdsRef = useRef(new Set())
 
   useEffect(() => {
     async function loadTodos() {
@@ -39,9 +42,30 @@ export function useTodos() {
   async function toggleTodoCompletion(id, completed) {
     const previousTodo = todos.find((todo) => todo.id === id)
 
-    if (!previousTodo) {
+    if (id === null || id === undefined || id === '') {
+      setUpdateError('Invalid todo selected for update.')
       return
     }
+
+    if (!previousTodo) {
+      setUpdateError('Todo not found for update.')
+      return
+    }
+
+    if (typeof completed !== 'boolean') {
+      setUpdateError('Completed value must be true or false.')
+      return
+    }
+
+    if (updatingIdsRef.current.has(id)) {
+      return
+    }
+
+    const previousTodoSnapshot = { ...previousTodo }
+
+    updatingIdsRef.current.add(id)
+    setUpdatingIds((current) => [...current, id])
+    setUpdateError('')
 
     setTodos((currentTodos) =>
       currentTodos.map((todo) =>
@@ -72,14 +96,19 @@ export function useTodos() {
 
       setTodos((currentTodos) =>
         currentTodos.map((todo) =>
-          todo.id === id
-            ? {
-                ...todo,
-                ...previousTodo,
-              }
-            : todo,
+          todo.id === id ? previousTodoSnapshot : todo,
         ),
       )
+
+      const rawMessage = error?.message || ''
+      const userMessage = rawMessage.includes('not found')
+        ? 'This todo could not be found. It may already have been removed.'
+        : 'Unable to update todo completion. Please try again.'
+
+      setUpdateError(userMessage)
+    } finally {
+      updatingIdsRef.current.delete(id)
+      setUpdatingIds((current) => current.filter((pendingId) => pendingId !== id))
     }
   }
 
@@ -144,7 +173,9 @@ export function useTodos() {
     isLoading,
     error,
     deleteError,
+    updateError,
     deletingIds,
+    updatingIds,
     addTodo,
     toggleTodoCompletion,
     deleteTodo,

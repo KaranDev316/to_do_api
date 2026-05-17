@@ -106,4 +106,45 @@ describe('Todo completion updates', () => {
     )
     expect(screen.getByText('Optimistic todo')).not.toHaveClass('line-through')
   })
+
+  it('disables the toggle and avoids duplicate requests while an update is pending', async () => {
+    let resolveUpdate
+    globalThis.fetch
+      .mockResolvedValueOnce(okJson(todos))
+      .mockReturnValueOnce(
+        new Promise((resolve) => {
+          resolveUpdate = resolve
+        }),
+      )
+
+    renderTodoListRoute()
+    await screen.findByText('Optimistic todo')
+
+    fireEvent.click(screen.getByRole('button', { name: 'Mark complete: Optimistic todo' }))
+    fireEvent.click(screen.getByRole('button', { name: 'Updating Optimistic todo' }))
+
+    expect(screen.getByRole('button', { name: 'Updating Optimistic todo' })).toBeDisabled()
+    expect(globalThis.fetch).toHaveBeenCalledTimes(2)
+    expect(globalThis.fetch).toHaveBeenLastCalledWith('/todos/1', {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ completed: true }),
+    })
+
+    await act(async () => {
+      resolveUpdate(
+        okJson({
+          ...todos[0],
+          completed: true,
+        }),
+      )
+    })
+
+    expect(
+      screen.getByRole('button', { name: 'Mark incomplete: Optimistic todo' }),
+    ).not.toBeDisabled()
+    expect(screen.getByText('Optimistic todo')).toHaveClass('line-through')
+  })
 })

@@ -9,7 +9,9 @@ function TodoListPage() {
     isLoading,
     error,
     deleteError,
+    updateError,
     deletingIds,
+    updatingIds,
     addTodo,
     toggleTodoCompletion,
     deleteTodo,
@@ -53,12 +55,19 @@ function TodoListPage() {
           </p>
         )}
 
+        {!isLoading && updateError && (
+          <p className="text-center text-sm font-medium text-red-600">
+            {updateError}
+          </p>
+        )}
+
         {!isLoading && !error && (
           <TodoList
             todos={todos}
             onDelete={deleteTodo}
             onToggle={toggleTodoCompletion}
             deletingIds={deletingIds}
+            updatingIds={updatingIds}
           />
         )}
       </div>

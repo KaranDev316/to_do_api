@@ -71,6 +71,10 @@ export async function updateTodo(id, updates) {
     throw new Error('Invalid todo response')
   }
 
+  if (typeof updatedTodo.completed !== 'boolean') {
+    throw new Error('Invalid todo response')
+  }
+
   return updatedTodo
 }
 

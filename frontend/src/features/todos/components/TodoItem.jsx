@@ -1,4 +1,4 @@
-function TodoItem({ todo, onDelete, onToggle, isDeleting }) {
+function TodoItem({ todo, onDelete, onToggle, isDeleting, isUpdating = false }) {
   const isCompleted = Boolean(todo.completed)
   const createdDate = todo.createdAt
     ? new Date(todo.createdAt).toLocaleDateString()
@@ -17,6 +17,10 @@ function TodoItem({ todo, onDelete, onToggle, isDeleting }) {
   const handleToggle = (event) => {
     event.preventDefault()
     event.stopPropagation()
+
+    if (isUpdating) {
+      return
+    }
 
     const nextCompleted = !isCompleted
     onToggle?.(todo.id, nextCompleted)
@@ -47,10 +51,11 @@ function TodoItem({ todo, onDelete, onToggle, isDeleting }) {
         <button
           type="button"
           onClick={handleToggle}
-          className={`flex h-8 w-8 items-center justify-center rounded border text-sm font-bold transition-colors ${isCompleted ? 'border-emerald-500 bg-emerald-50 text-emerald-700' : 'border-slate-300 bg-white text-transparent hover:border-slate-400'}`}
+          disabled={isUpdating}
+          className={`flex h-8 w-8 items-center justify-center rounded border text-sm font-bold transition-colors ${isUpdating ? 'cursor-not-allowed border-slate-300 bg-slate-100 text-slate-400' : isCompleted ? 'border-emerald-500 bg-emerald-50 text-emerald-700' : 'border-slate-300 bg-white text-transparent hover:border-slate-400'}`}
           aria-pressed={isCompleted}
-          aria-label={`${isCompleted ? 'Mark incomplete' : 'Mark complete'}: ${todo.title}`}
-          title={isCompleted ? 'Mark incomplete' : 'Mark complete'}
+          aria-label={isUpdating ? `Updating ${todo.title}` : `${isCompleted ? 'Mark incomplete' : 'Mark complete'}: ${todo.title}`}
+          title={isUpdating ? 'Updating...' : isCompleted ? 'Mark incomplete' : 'Mark complete'}
         >
           ✓
         </button>
