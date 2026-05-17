@@ -1,7 +1,7 @@
 import { Link } from 'react-router-dom'
 import TodoItem from './TodoItem'
 
-function TodoList({ todos, onDelete, deletingIds }) {
+function TodoList({ todos, onDelete, onToggle, deletingIds }) {
   if (todos.length === 0) {
     return (
       <div className="rounded-md border border-dashed border-slate-300 bg-white px-4 py-8 text-center">
@@ -21,7 +21,7 @@ function TodoList({ todos, onDelete, deletingIds }) {
             to={`/todos/${todo.id}`}
             className="block rounded-md transition hover:-translate-y-0.5 hover:shadow-md focus:outline-none focus:ring-2 focus:ring-slate-400 focus:ring-offset-2"
             onClick={(e) => {
-              if (e.target.closest('button')) {
+              if (e.target.closest('button, input')) {
                 e.preventDefault()
               }
             }}
@@ -29,6 +29,7 @@ function TodoList({ todos, onDelete, deletingIds }) {
             <TodoItem
               todo={todo}
               onDelete={onDelete}
+              onToggle={onToggle}
               isDeleting={deletingIds.includes(todo.id)}
             />
           </Link>

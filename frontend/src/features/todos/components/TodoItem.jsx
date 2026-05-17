@@ -1,4 +1,7 @@
-function TodoItem({ todo, onDelete, isDeleting }) {
+import { useState } from 'react'
+
+function TodoItem({ todo, onDelete, onToggle, isDeleting }) {
+  const [isCompleted, setIsCompleted] = useState(Boolean(todo.completed))
   const createdDate = todo.createdAt
     ? new Date(todo.createdAt).toLocaleDateString()
     : 'Not available'
@@ -13,14 +16,28 @@ function TodoItem({ todo, onDelete, isDeleting }) {
     }
   }
 
+  const handleToggle = (event) => {
+    event.stopPropagation()
+
+    const nextCompleted = !isCompleted
+    setIsCompleted(nextCompleted)
+    onToggle?.(todo.id, nextCompleted)
+  }
+
   return (
-    <div className="flex items-center justify-between gap-4 rounded-md border border-slate-200 bg-white px-4 py-3 shadow-sm">
+    <div
+      className={`flex items-center justify-between gap-4 rounded-md border border-slate-200 bg-white px-4 py-3 shadow-sm transition-opacity ${isCompleted ? 'opacity-60' : 'opacity-100'}`}
+    >
       <div className="min-w-0 space-y-1">
-        <span className="block break-words font-medium text-slate-800">
+        <span
+          className={`block break-words font-medium text-slate-800 ${isCompleted ? 'line-through' : ''}`}
+        >
           {todo.title}
         </span>
 
-        <p className="break-words text-sm text-slate-500">
+        <p
+          className={`break-words text-sm text-slate-500 ${isCompleted ? 'line-through' : ''}`}
+        >
           {todo.description || 'No description provided'}
         </p>
 
@@ -29,13 +46,16 @@ function TodoItem({ todo, onDelete, isDeleting }) {
         </p>
       </div>
       <div className="flex items-center shrink-0 gap-3">
-        <span
-          className="text-xl"
-          aria-label={todo.completed ? 'Completed' : 'Not completed'}
-          title={todo.completed ? 'Completed' : 'Not completed'}
+        <button
+          type="button"
+          onClick={handleToggle}
+          className={`flex h-8 w-8 items-center justify-center rounded border text-sm font-bold transition-colors ${isCompleted ? 'border-emerald-500 bg-emerald-50 text-emerald-700' : 'border-slate-300 bg-white text-transparent hover:border-slate-400'}`}
+          aria-pressed={isCompleted}
+          aria-label={`${isCompleted ? 'Mark incomplete' : 'Mark complete'}: ${todo.title}`}
+          title={isCompleted ? 'Mark incomplete' : 'Mark complete'}
         >
-          {todo.completed ? '✅' : '❌'}
-        </span>
+          ✓
+        </button>
         <button
           type="button"
           onClick={handleDelete}
