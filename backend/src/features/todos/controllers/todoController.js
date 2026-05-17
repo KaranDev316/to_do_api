@@ -44,6 +44,22 @@ async function completeTodo(req, res) {
   return res.status(200).json(todo);
 }
 
+async function updateTodo(req, res) {
+  const todo = await todoService.updateTodo(req.todoId, req.validatedTodoUpdates);
+
+  if (!todo) {
+    return res.status(404).json({
+      success: false,
+      message: 'Todo not found'
+    });
+  }
+
+  return res.status(200).json({
+    success: true,
+    data: todo
+  });
+}
+
 async function deleteTodo(req, res) {
   const todo = await todoService.deleteTodo(req.todoId);
 
@@ -59,5 +75,6 @@ module.exports = {
   getTodoById,
   createTodo,
   completeTodo,
+  updateTodo,
   deleteTodo
 };

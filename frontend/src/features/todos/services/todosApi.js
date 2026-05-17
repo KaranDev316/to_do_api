@@ -50,6 +50,30 @@ export async function createTodo(title, description = '') {
   return createdTodo
 }
 
+export async function updateTodo(id, updates) {
+  const response = await apiFetch(`/todos/${id}`, {
+    method: 'PUT',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(updates),
+  })
+
+  if (!response.ok) {
+    const errorResult = await response.json().catch(() => null)
+    throw new Error(errorResult?.message || 'Failed to update todo')
+  }
+
+  const result = await response.json()
+  const updatedTodo = result.data ?? result
+
+  if (!updatedTodo?.id || !updatedTodo?.title) {
+    throw new Error('Invalid todo response')
+  }
+
+  return updatedTodo
+}
+
 export async function deleteTodo(id) {
   const response = await apiFetch(`/todos/${id}`, {
     method: 'DELETE',

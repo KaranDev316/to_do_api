@@ -4,7 +4,16 @@ import { useCreateTodo } from '../hooks/useCreateTodo'
 import { useTodos } from '../hooks/useTodos'
 
 function TodoListPage() {
-  const { todos, isLoading, error, deleteError, deletingIds, addTodo, deleteTodo } = useTodos()
+  const {
+    todos,
+    isLoading,
+    error,
+    deleteError,
+    deletingIds,
+    addTodo,
+    toggleTodoCompletion,
+    deleteTodo,
+  } = useTodos()
   const addTodoForm = useCreateTodo(addTodo)
 
   return (
@@ -45,7 +54,12 @@ function TodoListPage() {
         )}
 
         {!isLoading && !error && (
-          <TodoList todos={todos} onDelete={deleteTodo} deletingIds={deletingIds} />
+          <TodoList
+            todos={todos}
+            onDelete={deleteTodo}
+            onToggle={toggleTodoCompletion}
+            deletingIds={deletingIds}
+          />
         )}
       </div>
     </div>

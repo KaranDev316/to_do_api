@@ -30,4 +30,18 @@ describe('todoService', () => {
     });
     expect(updatedTodo.createdAt).toBe(todo.createdAt);
   });
+
+  it('updates a todo complete status directly', async () => {
+    const todo = await todoService.createTodo({ title: 'Update me' });
+    const updatedTodo = await todoService.updateTodo(todo.id, {
+      completed: true
+    });
+
+    expect(updatedTodo).toMatchObject({
+      id: todo.id,
+      title: 'Update me',
+      completed: true
+    });
+    expect(updatedTodo.createdAt).toBe(todo.createdAt);
+  });
 });

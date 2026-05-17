@@ -1,4 +1,5 @@
 import { fireEvent, render, screen } from '@testing-library/react'
+import { useState } from 'react'
 import { describe, expect, it, vi } from 'vitest'
 import TodoItem from '../components/TodoItem'
 
@@ -6,19 +7,33 @@ describe('TodoItem', () => {
   it('toggles completed state immediately and emits the next value', () => {
     const onToggle = vi.fn()
 
-    render(
-      <TodoItem
-        todo={{
-          id: 7,
-          title: 'Toggle me',
-          description: 'Check the local UI state',
-          completed: false,
-        }}
-        onDelete={vi.fn()}
-        onToggle={onToggle}
-        isDeleting={false}
-      />,
-    )
+    function TodoItemHarness() {
+      const [todo, setTodo] = useState({
+        id: 7,
+        title: 'Toggle me',
+        description: 'Check the local UI state',
+        completed: false,
+      })
+
+      const handleToggle = (id, completed) => {
+        onToggle(id, completed)
+        setTodo((currentTodo) => ({
+          ...currentTodo,
+          completed,
+        }))
+      }
+
+      return (
+        <TodoItem
+          todo={todo}
+          onDelete={vi.fn()}
+          onToggle={handleToggle}
+          isDeleting={false}
+        />
+      )
+    }
+
+    render(<TodoItemHarness />)
 
     const toggleButton = screen.getByRole('button', {
       name: 'Mark complete: Toggle me',

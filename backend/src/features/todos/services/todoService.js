@@ -28,6 +28,12 @@ async function toggleTodoComplete(id) {
   });
 }
 
+async function updateTodo(id, data) {
+  return todoRepository.update(id, {
+    completed: data.completed
+  });
+}
+
 async function deleteTodo(id) {
   return todoRepository.remove(id);
 }
@@ -37,5 +43,6 @@ module.exports = {
   getTodoById,
   createTodo,
   toggleTodoComplete,
+  updateTodo,
   deleteTodo
 };

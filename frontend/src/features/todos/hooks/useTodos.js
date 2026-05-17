@@ -1,5 +1,9 @@
 import { useEffect, useRef, useState } from 'react'
-import { getTodos, deleteTodo as deleteTodoApi } from '../services/todosApi'
+import {
+  getTodos,
+  deleteTodo as deleteTodoApi,
+  updateTodo as updateTodoApi,
+} from '../services/todosApi'
 
 export function useTodos() {
   const [todos, setTodos] = useState([])
@@ -30,6 +34,53 @@ export function useTodos() {
 
   function addTodo(todo) {
     setTodos((currentTodos) => [...currentTodos, todo])
+  }
+
+  async function toggleTodoCompletion(id, completed) {
+    const previousTodo = todos.find((todo) => todo.id === id)
+
+    if (!previousTodo) {
+      return
+    }
+
+    setTodos((currentTodos) =>
+      currentTodos.map((todo) =>
+        todo.id === id
+          ? {
+              ...todo,
+              completed,
+            }
+          : todo,
+      ),
+    )
+
+    try {
+      const updatedTodo = await updateTodoApi(id, { completed })
+
+      setTodos((currentTodos) =>
+        currentTodos.map((todo) =>
+          todo.id === id
+            ? {
+                ...todo,
+                ...updatedTodo,
+              }
+            : todo,
+        ),
+      )
+    } catch (error) {
+      console.error('Failed to update todo completion:', error)
+
+      setTodos((currentTodos) =>
+        currentTodos.map((todo) =>
+          todo.id === id
+            ? {
+                ...todo,
+                ...previousTodo,
+              }
+            : todo,
+        ),
+      )
+    }
   }
 
   async function deleteTodo(id) {
@@ -95,6 +146,7 @@ export function useTodos() {
     deleteError,
     deletingIds,
     addTodo,
+    toggleTodoCompletion,
     deleteTodo,
   }
 }

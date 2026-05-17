@@ -1,7 +1,5 @@
-import { useState } from 'react'
-
 function TodoItem({ todo, onDelete, onToggle, isDeleting }) {
-  const [isCompleted, setIsCompleted] = useState(Boolean(todo.completed))
+  const isCompleted = Boolean(todo.completed)
   const createdDate = todo.createdAt
     ? new Date(todo.createdAt).toLocaleDateString()
     : 'Not available'
@@ -17,10 +15,10 @@ function TodoItem({ todo, onDelete, onToggle, isDeleting }) {
   }
 
   const handleToggle = (event) => {
+    event.preventDefault()
     event.stopPropagation()
 
     const nextCompleted = !isCompleted
-    setIsCompleted(nextCompleted)
     onToggle?.(todo.id, nextCompleted)
   }
 

@@ -51,3 +51,37 @@ describe('POST /todos', () => {
     expect(new Date(response.body.data.createdAt).toString()).not.toBe('Invalid Date');
   });
 });
+
+describe('PUT /todos/:id', () => {
+  it('updates a todo completion status', async () => {
+    const createResponse = await request(app).post('/todos').send({
+      title: 'Update through PUT'
+    });
+
+    const response = await request(app)
+      .put(`/todos/${createResponse.body.data.id}`)
+      .send({ completed: true });
+
+    expect(response.status).toBe(200);
+    expect(response.body).toMatchObject({
+      success: true,
+      data: {
+        id: createResponse.body.data.id,
+        title: 'Update through PUT',
+        completed: true
+      }
+    });
+  });
+
+  it('rejects a non-boolean completed value', async () => {
+    const response = await request(app).put('/todos/1').send({
+      completed: 'yes'
+    });
+
+    expect(response.status).toBe(400);
+    expect(response.body).toEqual({
+      success: false,
+      message: 'Completed must be true or false'
+    });
+  });
+});

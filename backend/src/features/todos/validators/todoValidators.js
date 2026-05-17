@@ -48,7 +48,25 @@ function validateCreateTodo(req, res, next) {
   return next();
 }
 
+function validateUpdateTodo(req, res, next) {
+  const { completed } = req.body;
+
+  if (typeof completed !== 'boolean') {
+    return res.status(400).json({
+      success: false,
+      message: 'Completed must be true or false'
+    });
+  }
+
+  req.validatedTodoUpdates = {
+    completed
+  };
+
+  return next();
+}
+
 module.exports = {
   validateTodoId,
-  validateCreateTodo
+  validateCreateTodo,
+  validateUpdateTodo
 };
